@@ -8,7 +8,7 @@ class UserAdmin(admin.ModelAdmin):
     """
     Admin configuration for the User model.
     """
-    list_display = ['first_name', 'email', 'date_of_birth', 'age']
+    list_display = ['first_name', 'last_name', 'email', 'date_of_birth', 'age']
 
     search_fields = ['first_name', 'last_name', 'email', 'date_of_birth', 'age']
 
