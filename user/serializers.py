@@ -43,6 +43,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data['password'],
             first_name=validated_data['first_name'],
             last_name=validated_data.get('last_name', ''),
+            date_of_birth=validated_data['date_of_birth'],
             pic=validated_data.get('pic', None)
         )
         return user
