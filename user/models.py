@@ -64,7 +64,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # phone = models.CharField(max_length=15, blank=True)
 
     # Optional field for a user biography
-    blood_group = models.CharField(choices=[('A+', 'A+'), ('A-', 'A-'), ('B+', 'B+'), ('B-', 'B-'), ('AB+', 'AB+'), ('AB-', 'AB-'), ('O+', 'O+'), ('O-', 'O-')], max_length=3, blank=True, null=True)
+    # blood_group = models.CharField(choices=[('A+', 'A+'), ('A-', 'A-'), ('B+', 'B+'), ('B-', 'B-'), ('AB+', 'AB+'), ('AB-', 'AB-'), ('O+', 'O+'), ('O-', 'O-')], max_length=3, blank=True, null=True)
 
     # Boolean field to determine if the user's email address has been verified
     # is_verified = models.BooleanField(default=False)
