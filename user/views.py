@@ -63,27 +63,6 @@ class LoginAPI(TokenObtainPairView):
             }
         })
 
-# Logout API
-class LogoutAPI(generics.GenericAPIView):
-    """
-    API endpoint for user logout.
-    Blacklists the refresh token to invalidate it.
-    """
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = None
-
-    def post(self, request):
-        try:
-            refresh_token = request.data.get("refresh")
-            if not refresh_token:
-                return Response({"detail": "Refresh token is required."}, status=status.HTTP_400_BAD_REQUEST)
-
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response(status=status.HTTP_205_RESET_CONTENT)
-        except TokenError:
-            return Response({"detail": "Invalid refresh token."}, status=status.HTTP_400_BAD_REQUEST)
-
 # Get User API
 class UserAPI(generics.RetrieveAPIView):
     """
