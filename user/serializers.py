@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             'id', 'email', 'first_name', 'last_name', 'pic','date_of_birth', 
-            'age', 'blood_group', 'is_active', 'is_staff'
+            'age', 'is_active', 'is_staff'
         )
 
 # Serializer for user registration
