@@ -1,6 +1,6 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from .serializers import RegisterSerializer
+from .serializers import RegisterSerializer, DonorSerializer
 from . models import Donor
 
 # Register API
@@ -21,3 +21,15 @@ class RegisterAPI(generics.GenericAPIView):
             "donor": donor.id,
             "message": "Donor registered successfully."
         }, status=status.HTTP_201_CREATED)
+    
+# Donor API
+class DonorAPI(generics.RetrieveAPIView):
+    """
+    API endpoint for retrieving donor details.
+    """
+    
+    serializer_class = DonorSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return Donor.objects.get(user=self.request.user)

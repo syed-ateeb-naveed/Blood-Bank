@@ -7,6 +7,6 @@ urlpatterns = [
     # Endpoint for user registration
     path('register/', views.RegisterAPI.as_view(), name='register'),
 
-    # Endpoint for retrieving user details
-    # path('', views.UserAPI.as_view(), name='donor_detail'),
+    # Endpoint for retrieving donor details
+    path('', views.DonorAPI.as_view(), name='donor_detail'),
 ]
