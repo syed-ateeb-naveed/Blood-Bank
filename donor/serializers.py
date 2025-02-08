@@ -67,3 +67,12 @@ class DonationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Donation
         fields = ('id', 'donor', 'date', 'time', 'units', 'location')
+
+class AllDonationsSerializer(serializers.ModelSerializer):
+    """
+    Serializer for all donations
+    """
+    
+    class Meta:
+        model = Donation
+        fields = ('id', 'donor', 'date', 'time', 'units', 'location')

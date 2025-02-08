@@ -18,4 +18,7 @@ urlpatterns = [
 
     # Endpoint for making a donation
     path('donate/', views.DonationAPI.as_view(), name='donate'),
+
+    # Endpoint for retrieving donations
+    path('donations/', views.DonationListAPI.as_view(), name='donations'),
 ]

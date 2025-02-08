@@ -1,7 +1,7 @@
 from rest_framework import generics, permissions, status
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
-from .serializers import RegisterSerializer, DonorSerializer, UpdateDonorSerializer, DonationSerializer
+from .serializers import RegisterSerializer, DonorSerializer, UpdateDonorSerializer, DonationSerializer, AllDonationsSerializer
 from rest_framework.views import APIView
 from . models import Donor
 
@@ -83,3 +83,18 @@ class DonationAPI(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save(donor=donor)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class DonationListAPI(generics.ListAPIView):
+    """
+    API endpoint for retrieving donations.
+    """
+    serializer_class = AllDonationsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        try:
+            donations = self.request.user.donor.donations.all()
+        except Donor.DoesNotExist:
+            raise NotFound(detail="Donor not found", code=status.HTTP_404_NOT_FOUND)
+
+        return donations
