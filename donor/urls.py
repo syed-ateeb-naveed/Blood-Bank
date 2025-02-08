@@ -15,4 +15,7 @@ urlpatterns = [
 
     # Endpoint for partially updating donor details
     path('partial_update/', views.PartialUpdateDonorAPI.as_view(), name='partial_update_donor'),
+
+    # Endpoint for making a donation
+    path('donate/', views.DonationAPI.as_view(), name='donate'),
 ]

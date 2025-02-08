@@ -1,7 +1,7 @@
 from rest_framework import generics, permissions, status
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
-from .serializers import RegisterSerializer, DonorSerializer, UpdateDonorSerializer
+from .serializers import RegisterSerializer, DonorSerializer, UpdateDonorSerializer, DonationSerializer
 from rest_framework.views import APIView
 from . models import Donor
 
@@ -66,3 +66,20 @@ class PartialUpdateDonorAPI(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class DonationAPI(generics.CreateAPIView):
+    """
+    API endpoint for making a donation.
+    """
+    serializer_class = DonationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        try:
+            donor = Donor.objects.get(user=request.user)
+        except Donor.DoesNotExist:
+            return Response({"message": "Register as donor first."}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(donor=donor)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

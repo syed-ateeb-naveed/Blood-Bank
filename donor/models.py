@@ -14,3 +14,11 @@ class Donor(models.Model):
 
     def __str__(self):
         return self.user.first_name + ' ' + self.user.last_name
+    
+class Donation(models.Model):
+
+    donor = models.ForeignKey(Donor, on_delete=models.CASCADE, related_name='donations')
+    date = models.DateField()
+    time = models.TimeField()
+    units = models.IntegerField(default=1)
+    location = models.CharField(max_length=255)

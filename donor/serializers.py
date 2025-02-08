@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from . models import Donor
+from . models import Donor, Donation
 from user.serializers import UserSerializer
 
 # Serializer for Donor model
@@ -57,3 +57,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
 
         return donor
+    
+class DonationSerializer(serializers.ModelSerializer):
+    """
+    Serializer for donation details
+    """
+    donor = DonorSerializer(read_only=True)
+
+    class Meta:
+        model = Donation
+        fields = ('id', 'donor', 'date', 'time', 'units', 'location')
