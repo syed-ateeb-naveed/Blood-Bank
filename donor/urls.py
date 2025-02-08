@@ -9,4 +9,10 @@ urlpatterns = [
 
     # Endpoint for retrieving donor details
     path('', views.DonorAPI.as_view(), name='donor_detail'),
+
+    # Endpoint for updating donor details
+    path('update/', views.UpdateDonorAPI.as_view(), name='update_donor'),
+
+    # Endpoint for partially updating donor details
+    path('partial_update/', views.PartialUpdateDonorAPI.as_view(), name='partial_update_donor'),
 ]

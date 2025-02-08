@@ -15,39 +15,16 @@ class DonorSerializer(serializers.ModelSerializer):
         model = Donor
         fields = ('id', 'user', 'blood_group', 'gender', 'height', 'weight', 'ailments')
 
-# Serializer for user registration
-class RegisterSerializer(serializers.ModelSerializer):
-    """
-    Serializer for user registration, handles password creation.
-    """
-    blood_group = serializers.CharField(write_only=True, required=True)
-    gender = serializers.CharField(required=True)
-    height = serializers.FloatField(required=True)
-    weight = serializers.FloatField(required=True)
-    ailments = serializers.CharField(required=False)
+#Serializer for donor edit
 
+class UpdateDonorSerializer(serializers.ModelSerializer):
+    """
+    Serializer for updating donor details
+    """
     class Meta:
         model = Donor
-        fields = ('id', 'user', 'blood_group', 'gender', 'height', 'weight', 'ailments')
-        extra_kwargs = {
-            'user': {'read_only': True} 
-        }
-    
-    def create(self, validated_data):
-        """
-        Create a new donor
-        """
-        donor = Donor.objects.create(
-            user=self.context['request'].user,
-            blood_group=validated_data['blood_group'],
-            gender=validated_data['gender'],
-            height=validated_data['height'],
-            weight=validated_data['weight'],
-            ailments=validated_data.get('ailments', '')
-        )
-
-        return donor
-
+        fields = ('blood_group', 'gender', 'height', 'weight', 'ailments') 
+        
 # Serializer for donor registration
 class RegisterSerializer(serializers.ModelSerializer):
     """

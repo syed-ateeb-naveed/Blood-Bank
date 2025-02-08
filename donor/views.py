@@ -1,6 +1,8 @@
 from rest_framework import generics, permissions, status
+from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
-from .serializers import RegisterSerializer, DonorSerializer
+from .serializers import RegisterSerializer, DonorSerializer, UpdateDonorSerializer
+from rest_framework.views import APIView
 from . models import Donor
 
 # Register API
@@ -32,4 +34,35 @@ class DonorAPI(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        return Donor.objects.get(user=self.request.user)
+        try:
+            return Donor.objects.get(user=self.request.user)
+        except Donor.DoesNotExist:
+            raise NotFound(detail="Donor not found", code=status.HTTP_404_NOT_FOUND)
+        
+# Update Donor API
+class UpdateDonorAPI(generics.UpdateAPIView):
+    """
+    API endpoint for updating donor details.
+    """
+    serializer_class = DonorSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        try:
+            return Donor.objects.get(user=self.request.user)
+        except Donor.DoesNotExist:
+            raise NotFound(detail="Donor not found", code=status.HTTP_404_NOT_FOUND)
+        
+class PartialUpdateDonorAPI(APIView):
+    """
+    API endpoint for partially updating donor details.
+    """
+    serializer_class = UpdateDonorSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request, *args, **kwargs):
+        donor = Donor.objects.get(user=request.user)
+        serializer = self.serializer_class(donor, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
