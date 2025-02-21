@@ -1,0 +1,6 @@
+Django==4.2.17
+djangorestframework
+gunicorn
+django-netlify
+django-cors-headers
+djangorestframework-simplejwt
