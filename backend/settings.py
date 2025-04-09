@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'user',
     'donor',
     'patient',
+    'worker',
 ]
 
 AUTH_USER_MODEL = 'user.User'
