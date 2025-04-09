@@ -15,6 +15,7 @@ class Request(models.Model):
 
     blood_type =  models.CharField(choices=[('A+', 'A+'), ('A-', 'A-'), ('B+', 'B+'), ('B-', 'B-'), ('AB+', 'AB+'), ('AB-', 'AB-'), ('O+', 'O+'), ('O-', 'O-')], max_length=3)
     request_date = models.DateField(default=datetime.date.today)
+    units_required = models.IntegerField(default=1)
     status = models.CharField(choices=[('pending', 'Pending'), ('fulfilled', 'Fulfilled'), ('cancelled', 'Cancelled')], max_length=10, default='pending')
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='requests')
 
