@@ -15,6 +15,10 @@ class Inventory(models.Model):
     def __str__(self):
         return f"Inventory - {self.units_available} units available"
     
+    class Meta:
+        verbose_name = "Inventory"
+        verbose_name_plural = "Inventory"
+    
 class Location(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=255)
