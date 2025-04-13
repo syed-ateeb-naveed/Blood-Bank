@@ -4,4 +4,13 @@ from . models import Patient, Request
 
 
 admin.site.register(Patient)
-admin.site.register(Request)
+
+@admin.register(Request)
+class RequestAdmin(admin.ModelAdmin):
+    """
+    Admin configuration for the Request model.
+    """
+    list_display = ['patient', 'blood_type', 'units_required', 'request_date', 'status']
+    list_filter = ['blood_type', 'status', 'request_date']
+
+    
