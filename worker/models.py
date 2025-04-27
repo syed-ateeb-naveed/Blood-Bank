@@ -25,3 +25,19 @@ class Location(models.Model):
 
     def __str__(self):
         return self.name + ' - ' + self.address
+    
+class Status(models.Model):
+    status = models.CharField(
+        choices=[
+            ('pending', 'Pending'),
+            ('fulfilled', 'Fulfilled'),
+            ('cancelled', 'Cancelled'),
+            ('approved', 'Approved'),
+            ('declined', 'Declined')
+        ],
+        max_length=10,
+        unique=True
+    )
+
+    def __str__(self):
+        return self.status

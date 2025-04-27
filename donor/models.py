@@ -1,5 +1,5 @@
 from django.db import models
-
+from worker.models import Status
 # Create your models here.
 
 class Donor(models.Model):
@@ -22,3 +22,5 @@ class Donation(models.Model):
     time = models.TimeField()
     units = models.IntegerField(default=1)
     location = models.CharField(max_length=255)
+
+    status = models.ForeignKey(Status, on_delete=models.PROTECT, null=True, blank=True, related_name='donation_status')
