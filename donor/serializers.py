@@ -72,7 +72,7 @@ class AllDonationsSerializer(serializers.ModelSerializer):
     """
     Serializer for all donations
     """
-    
+    status = serializers.CharField(source='status.status')
     class Meta:
         model = Donation
-        fields = ('id', 'donor', 'date', 'time', 'units', 'location')
+        fields = ('id', 'donor', 'date', 'time', 'units', 'location', 'status')

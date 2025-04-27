@@ -29,6 +29,7 @@ class AllRequestsSerializer(serializers.ModelSerializer):
     """
     Serializer for all donations
     """
+    status = serializers.CharField(source='status.status')
     
     class Meta:
         model = Request
