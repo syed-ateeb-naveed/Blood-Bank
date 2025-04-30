@@ -63,10 +63,11 @@ class DonationSerializer(serializers.ModelSerializer):
     Serializer for donation details
     """
     donor = DonorSerializer(read_only=True)
+    status = serializers.CharField(source='status.status', read_only=True)
 
     class Meta:
         model = Donation
-        fields = ('id', 'donor', 'date', 'time', 'units', 'location')
+        fields = ('id', 'donor', 'date', 'time', 'units', 'location', 'status')
 
 class AllDonationsSerializer(serializers.ModelSerializer):
     """

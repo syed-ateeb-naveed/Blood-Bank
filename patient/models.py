@@ -20,7 +20,7 @@ class Request(models.Model):
     # status = models.CharField(choices=[('pending', 'Pending'), ('fulfilled', 'Fulfilled'), ('cancelled', 'Cancelled')], max_length=10, default='pending')
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='requests')
 
-    status = models.ForeignKey(Status, on_delete=models.PROTECT, related_name='request_status', null=True, blank=True) 
+    status = models.ForeignKey(Status, on_delete=models.PROTECT, related_name='request_status', default=1) 
 
     def __str__(self):
         return f"{self.patient.user.first_name} {self.patient.user.last_name} - {self.blood_type} - {self.units_required} - {self.request_date}"

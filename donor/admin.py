@@ -20,7 +20,7 @@ class DonorAdmin(admin.ModelAdmin):
 @admin.register(Donation)
 class DonationAdmin(admin.ModelAdmin):
     
-    list_display = ['donor', 'date', 'time', 'units', 'location']
+    list_display = ['donor', 'date', 'time', 'units', 'location', 'status']
     # list_filter = ['date', 'location']
     search_fields = ['donor__user__email', 'location']
     ordering = ['-date', '-time']

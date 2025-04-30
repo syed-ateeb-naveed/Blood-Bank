@@ -2,8 +2,10 @@ from django.shortcuts import render
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from .serializers import AllRequestsSerializer
+from donor.serializers import AllDonationsSerializer
 from .models import Worker, Inventory, Location, Status 
 from patient.models import Request
+from donor.models import Donation
 from rest_framework.views import APIView
 # Create your views here.
 
@@ -12,6 +14,17 @@ class IsStaffUser(permissions.BasePermission):
 
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_staff)
+
+class DonationListView(generics.ListAPIView):
+    """
+    API endpoint for retrieving all donations.
+    Only accessible by staff users.
+    """
+    serializer_class = AllDonationsSerializer
+    permission_classes = [permissions.IsAuthenticated, IsStaffUser]
+
+    def get_queryset(self):
+        return Donation.objects.all()
     
 class RequestListByStatusView(generics.ListAPIView):
     """

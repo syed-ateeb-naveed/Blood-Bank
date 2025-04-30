@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from .serializers import RegisterSerializer, DonorSerializer, UpdateDonorSerializer, DonationSerializer, AllDonationsSerializer
 from rest_framework.views import APIView
 from . models import Donor
+from worker.models import Status
 
 # Register API
 class RegisterAPI(generics.GenericAPIView):
@@ -14,6 +15,11 @@ class RegisterAPI(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
+        if Donor.objects.filter(user=request.user).exists():
+            return Response({
+                "message": "Donor is already registered."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -79,9 +85,10 @@ class DonationAPI(generics.CreateAPIView):
             donor = Donor.objects.get(user=request.user)
         except Donor.DoesNotExist:
             return Response({"message": "Register as donor first."}, status=status.HTTP_400_BAD_REQUEST)
+        status_obj = Status.objects.get(pk=1)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(donor=donor)
+        serializer.save(donor=donor, status=status_obj)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class DonationListAPI(generics.ListAPIView):

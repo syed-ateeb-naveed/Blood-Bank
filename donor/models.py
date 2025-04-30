@@ -23,4 +23,4 @@ class Donation(models.Model):
     units = models.IntegerField(default=1)
     location = models.CharField(max_length=255)
 
-    status = models.ForeignKey(Status, on_delete=models.PROTECT, null=True, blank=True, related_name='donation_status')
+    status = models.ForeignKey(Status, on_delete=models.PROTECT, default=1, related_name='donation_status')
