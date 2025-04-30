@@ -21,4 +21,4 @@ class AllRequestsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Request
-        fields = ('id', 'patient', 'blood_type', 'units_required', 'request_date')
+        fields = ('id', 'patient', 'blood_type', 'units_required', 'request_date', 'status')

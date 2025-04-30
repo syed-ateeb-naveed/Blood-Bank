@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from .serializers import RequestSerializer, AllRequestsSerializer
 from rest_framework.views import APIView
 from . models import Patient, Request
+from worker.models import Status
 
         
 class RequestAPI(generics.CreateAPIView):
@@ -20,9 +21,10 @@ class RequestAPI(generics.CreateAPIView):
             patient = Patient.objects.get(user=request.user)
         except Patient.DoesNotExist:
             patient = Patient.objects.create(user=request.user)
+        status_obj = Status.objects.get(status='pending')
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(patient=patient)
+        serializer.save(patient=patient, status=status_obj)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class RequestListAPI(generics.ListAPIView):
@@ -34,8 +36,9 @@ class RequestListAPI(generics.ListAPIView):
 
     def get_queryset(self):
         try:
-            requests = self.request.user.patient.requests.all()
+            patient = Patient.objects.get(user=self.request.user)
+            requests = patient.requests.all()
         except Patient.DoesNotExist:
-            return Response({"detail": "You have not made any blood requests"}, status=status.HTTP_200_OK)
+            raise NotFound({"detail": "You have not made any blood requests"}, code=status.HTTP_404_NOT_FOUND)
 
         return requests

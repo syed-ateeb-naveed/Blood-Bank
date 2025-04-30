@@ -20,10 +20,11 @@ class RequestSerializer(serializers.ModelSerializer):
     Serializer for donation details
     """
     patient = PatientSerializer(read_only=True)
+    status = serializers.CharField(source='status.status', read_only=True)
 
     class Meta:
         model = Request
-        fields = ('id', 'patient', 'blood_type', 'units_required', 'request_date')
+        fields = ('id', 'patient', 'blood_type', 'units_required', 'request_date', 'status')
 
 class AllRequestsSerializer(serializers.ModelSerializer):
     """

@@ -7,13 +7,16 @@ from .models import Worker, Inventory, Location, Status
 from patient.models import Request
 from donor.models import Donation
 from rest_framework.views import APIView
+from rest_framework.exceptions import PermissionDenied
 # Create your views here.
 
 class IsStaffUser(permissions.BasePermission):
     message = "Only staff members are allowed to access this resource."
 
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_staff)
+        if not (request.user and request.user.is_staff):
+            raise PermissionDenied(detail=self.message, code=status.HTTP_403_FORBIDDEN)
+        return True
 
 class DonationListView(generics.ListAPIView):
     """
@@ -25,23 +28,6 @@ class DonationListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Donation.objects.all()
-    
-class RequestListByStatusView(generics.ListAPIView):
-    """
-    API endpoint for retrieving requests by status.
-    Only accessible by staff users.
-    """
-    serializer_class = AllRequestsSerializer
-    permission_classes = [permissions.IsAuthenticated, IsStaffUser]
-
-    def get_queryset(self):
-        status_param = self.request.query_params.get('status')
-        valid_statuses = ['pending', 'approved', 'fulfilled', 'declined']
-
-        if status_param not in valid_statuses:
-            return Request.objects.none()  # Return empty queryset if invalid or no status given
-
-        return Request.objects.filter(status__status=status_param).order_by('-request_date')
 
 class DonationListByStatusView(generics.ListAPIView):
     """
@@ -59,6 +45,33 @@ class DonationListByStatusView(generics.ListAPIView):
             return Donation.objects.none()
 
         return Donation.objects.filter(status__status=status_param)
+    
+class RequestListView(generics.ListAPIView):
+    """
+    API endpoint for retrieving all requests.
+    Only accessible by staff users.
+    """
+    serializer_class = AllRequestsSerializer
+    permission_classes = [permissions.IsAuthenticated, IsStaffUser]
+
+    def get_queryset(self):
+        return Request.objects.all()
+class RequestListByStatusView(generics.ListAPIView):
+    """
+    API endpoint for retrieving requests by status.
+    Only accessible by staff users.
+    """
+    serializer_class = AllRequestsSerializer
+    permission_classes = [permissions.IsAuthenticated, IsStaffUser]
+
+    def get_queryset(self):
+        status_param = self.kwargs.get('status')  # Get from URL, not query params
+        valid_statuses = ['pending', 'approved', 'fulfilled', 'declined']
+
+        if status_param not in valid_statuses:
+            return Request.objects.none()
+
+        return Request.objects.filter(status__status=status_param)
 
 # class PendingRequestListView(generics.ListAPIView):
 #     """
