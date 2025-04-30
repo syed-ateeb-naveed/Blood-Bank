@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from .serializers import AllRequestsSerializer
+from .serializers import AllRequestsSerializer, RequestDetailSerializer, RequestUpdateSerializer, DonationDetailSerializer, DonationUpdateSerializer
 from donor.serializers import AllDonationsSerializer
 from .models import Worker, Inventory, Location, Status 
 from patient.models import Request
@@ -72,44 +72,37 @@ class RequestListByStatusView(generics.ListAPIView):
             return Request.objects.none()
 
         return Request.objects.filter(status__status=status_param)
+    
 
-# class PendingRequestListView(generics.ListAPIView):
-#     """
-#     API endpoint for retrieving pending requests.
-#     """
-#     serializer_class = AllRequestsSerializer
-#     permission_classes = [permissions.IsAuthenticated, IsStaffUser]
 
-#     def get_queryset(self):
-#         return Request.objects.filter(status__status='pending').order_by('-request_date')
+class RequestDetailUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = Request.objects.all()
+    permission_classes = [permissions.IsAuthenticated, IsStaffUser]
 
-# class ApprovedRequestListView(generics.ListAPIView):
-#     """
-#     API endpoint for retrieving approved requests.
-#     """
-#     serializer_class = AllRequestsSerializer
-#     permission_classes = [permissions.IsAuthenticated, IsStaffUser]
+    def get_serializer_class(self):
+        if self.request.method == 'PATCH':
+            return RequestUpdateSerializer
+        return RequestDetailSerializer
+    
+    def patch(self, request, *args, **kwargs):
+        response = super().patch(request, *args, **kwargs)
+        # Re-serialize with the full detail serializer
+        instance = self.get_object()
+        data = RequestDetailSerializer(instance).data
+        return Response(data)
 
-#     def get_queryset(self):
-#         return Request.objects.filter(status__status='approved').order_by('-request_date')
 
-# class FulfilledRequestListView(generics.ListAPIView):
-#     """
-#     API endpoint for retrieving fulfilled requests.
-#     """
-#     serializer_class = AllRequestsSerializer
-#     permission_classes = [permissions.IsAuthenticated, IsStaffUser]
+class DonationDetailUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = Donation.objects.all()
+    permission_classes = [permissions.IsAuthenticated, IsStaffUser]
 
-#     def get_queryset(self):
-#         return Request.objects.filter(status__status='fulfilled').order_by('-request_date')
-
-# class DeclinedRequestListView(generics.ListAPIView):
-#     """
-#     API endpoint for retrieving declined requests.
-#     """
-#     serializer_class = AllRequestsSerializer
-#     permission_classes = [permissions.IsAuthenticated, IsStaffUser]
-
-#     def get_queryset(self):
-#         return Request.objects.filter(status__status='declined').order_by('-request_date')
-
+    def get_serializer_class(self):
+        if self.request.method == 'PATCH':
+            return DonationUpdateSerializer
+        return DonationDetailSerializer
+    
+    def patch(self, request, *args, **kwargs):
+        response = super().patch(request, *args, **kwargs)
+        instance = self.get_object()
+        data = DonationDetailSerializer(instance).data
+        return Response(data)

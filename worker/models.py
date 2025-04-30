@@ -33,7 +33,9 @@ class Status(models.Model):
             ('fulfilled', 'Fulfilled'),
             ('cancelled', 'Cancelled'),
             ('approved', 'Approved'),
-            ('declined', 'Declined')
+            ('declined', 'Declined'),
+            ('scheduled', 'Scheduled'),
+            ('completed', 'Completed')
         ],
         max_length=10,
         unique=True

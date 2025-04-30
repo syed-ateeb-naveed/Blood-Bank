@@ -15,4 +15,7 @@ urlpatterns = [
     # Endpoint for retrieving requests by status
     path('requests/<str:status>/', views.RequestListByStatusView.as_view(), name='requests-by-status'),
 
+    path('request/<int:pk>/', views.RequestDetailUpdateView.as_view(), name='request-detail'),
+    path('donation/<int:pk>/', views.DonationDetailUpdateView.as_view(), name='donation-detail'),
+
 ]
