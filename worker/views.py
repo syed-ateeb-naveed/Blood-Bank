@@ -48,17 +48,17 @@ class DonationListByStatusView(generics.ListAPIView):
     API endpoint for retrieving donations by status.
     Only accessible by staff users.
     """
-    serializer_class = AllRequestsSerializer
+    serializer_class = AllDonationsSerializer
     permission_classes = [permissions.IsAuthenticated, IsStaffUser]
 
     def get_queryset(self):
-        status_param = self.request.query_params.get('status')
+        status_param = self.kwargs.get('status')  # Get from URL, not query params
         valid_statuses = ['pending', 'scheduled', 'completed', 'cancelled']
 
         if status_param not in valid_statuses:
-            return Request.objects.none()  # Return empty queryset if invalid or no status given
+            return Donation.objects.none()
 
-        return Request.objects.filter(status__status=status_param).order_by('-request_date')
+        return Donation.objects.filter(status__status=status_param)
 
 # class PendingRequestListView(generics.ListAPIView):
 #     """
