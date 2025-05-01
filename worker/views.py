@@ -89,9 +89,25 @@ class RequestDetailUpdateView(generics.RetrieveUpdateAPIView):
         response = super().patch(request, *args, **kwargs)
         # Re-serialize with the full detail serializer
         instance = self.get_object()
+        patient = instance.patient.user
+        decline_reason = request.data.get('decline_reason', '').strip()
+
+        if instance.status.status == 'pending':
+            msg = f"Your request is waiting for approval. Please wait for further updates."
+        elif instance.status.status == 'declined':
+            msg = "Your blood request has been declined."
+            if decline_reason:
+                msg += f" Reason: {decline_reason}"
+        elif instance.status.status == 'fulfilled':
+            msg = "Your request has been fulfilled. Thank you for your patience!"
+        elif instance.status.status == 'approved':
+            msg = "Your request has been approved. You may receive blood from our locations."
+        else:
+            msg = f"Your request status has been updated to {instance.status.status}."
+
+        Notification.objects.create(recipient=patient, message=msg)
         data = RequestDetailSerializer(instance).data
         return Response(data)
-
 
 class DonationDetailUpdateView(generics.RetrieveUpdateAPIView):
     queryset = Donation.objects.all()
@@ -114,6 +130,8 @@ class DonationDetailUpdateView(generics.RetrieveUpdateAPIView):
                 msg += f" Thank you for your contribution!"
             elif instance.status.status == 'scheduled':
                 msg += f" You are advised to be at {instance.location} on {instance.date} at {instance.time}."
+            elif instance.status.status == 'cancelled':
+                msg += f" Your donation has been cancelled."
         Notification.objects.create(recipient=user, message=msg)
         data = DonationDetailSerializer(instance).data
         return Response(data)
