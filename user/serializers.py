@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
+from .models import Notification
 
 User = get_user_model()
 
@@ -75,3 +76,11 @@ class LoginSerializer(serializers.Serializer):
                 raise serializers.ValidationError("Unable to log in with provided credentials.")
         else:
             raise serializers.ValidationError("Must include 'email' and 'password'.")
+
+class NotificationSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Notification model.
+    """
+    class Meta:
+        model = Notification
+        fields = ('id', 'message', 'is_read', 'created_at')

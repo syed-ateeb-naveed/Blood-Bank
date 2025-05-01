@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Permission, Group
 from datetime import date
+from django.db import models
+from django.contrib.auth.models import User
 
 class UserManager(BaseUserManager):
     """
@@ -99,4 +101,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = "Users"  # Plural name for the model
 
 
+class Notification(models.Model):
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"To {self.recipient.first_name}: {self.message[:50]}"

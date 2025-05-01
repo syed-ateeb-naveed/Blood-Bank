@@ -8,6 +8,7 @@ from patient.models import Request
 from donor.models import Donation
 from rest_framework.views import APIView
 from rest_framework.exceptions import PermissionDenied
+from user.models import Notification
 # Create your views here.
 
 class IsStaffUser(permissions.BasePermission):
@@ -104,5 +105,15 @@ class DonationDetailUpdateView(generics.RetrieveUpdateAPIView):
     def patch(self, request, *args, **kwargs):
         response = super().patch(request, *args, **kwargs)
         instance = self.get_object()
+        user = instance.donor.user
+        if instance.status.status == 'pending':
+            msg = f"Your donation is set to pending. Please wait for further updates."
+        else:
+            msg = f"Your donation status has been {instance.status.status}."
+            if instance.status.status == 'completed':
+                msg += f" Thank you for your contribution!"
+            elif instance.status.status == 'scheduled':
+                msg += f" You are advised to be at {instance.location} on {instance.date} at {instance.time}."
+        Notification.objects.create(recipient=user, message=msg)
         data = DonationDetailSerializer(instance).data
         return Response(data)

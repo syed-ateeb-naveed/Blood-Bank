@@ -19,4 +19,10 @@ urlpatterns = [
 
     # Endpoint for retrieving user details
     path('', views.UserAPI.as_view(), name='user_detail'),
+
+    # Endpoint for retrieving notifications
+    path('notifications/', views.UserNotificationListView.as_view(), name='notification_list'),
+
+    # Endpoint for retrieving notification count
+    path('notifications/count/', views.UserNotificationCount.as_view(), name='notification_count'),
 ]

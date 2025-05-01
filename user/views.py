@@ -5,7 +5,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from .serializers import UserSerializer, RegisterSerializer, LoginSerializer
+from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, NotificationSerializer
+from .models import Notification
 
 
 User = get_user_model()
@@ -73,3 +74,28 @@ class UserAPI(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
+
+class UserNotificationListView(generics.ListAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Notification.objects.filter(recipient=self.request.user).order_by('-created_at')
+    
+    def list(self, request, *args, **kwargs):
+        # Get the queryset first
+        queryset = self.get_queryset()
+
+        # Mark all unread notifications as read
+        queryset.filter(is_read=False).update(is_read=True)
+
+        # Now call the original list() to return response
+        return super().list(request, *args, **kwargs)
+
+class UserNotificationCount(generics.GenericAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        count = Notification.objects.filter(recipient=self.request.user, is_read=False).count()
+        return Response({"unread_count": count}, status=status.HTTP_200_OK)
