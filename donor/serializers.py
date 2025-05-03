@@ -1,10 +1,18 @@
 from rest_framework import serializers
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from . models import Donor, Donation
+from . models import Donor, Donation, Location
 from user.serializers import UserSerializer
 
 # Serializer for Donor model
+
+class LocationSerializer(serializers.ModelSerializer):
+    """
+    Serializer for location details
+    """
+    class Meta:
+        model = Location
+        fields = ('id', 'name', 'address', 'type', 'link')
 class DonorSerializer(serializers.ModelSerializer):
     """
     Serializer for donor details
@@ -64,6 +72,7 @@ class DonationSerializer(serializers.ModelSerializer):
     """
     donor = DonorSerializer(read_only=True)
     status = serializers.CharField(source='status.status', read_only=True)
+    location = LocationSerializer(read_only=True)
 
     class Meta:
         model = Donation
@@ -74,6 +83,7 @@ class AllDonationsSerializer(serializers.ModelSerializer):
     Serializer for all donations
     """
     status = serializers.CharField(source='status.status')
+    location = LocationSerializer(read_only=True)
     class Meta:
         model = Donation
         fields = ('id', 'donor', 'date', 'time', 'units', 'location', 'status')
