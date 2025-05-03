@@ -37,9 +37,10 @@ class RequestDetailSerializer(serializers.ModelSerializer):
 
 class RequestUpdateSerializer(serializers.ModelSerializer):
     status = StatusField(queryset=Status.objects.all())
+    decline_reason = serializers.CharField(write_only=True, required=False, allow_blank=True)
     class Meta:
         model = Request
-        fields = ['status']  # Allow status update only
+        fields = ['status', 'decline_reason']  # Allow status update only
 
 
 class DonationDetailSerializer(serializers.ModelSerializer):
