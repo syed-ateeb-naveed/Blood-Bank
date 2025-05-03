@@ -11,6 +11,7 @@ class Worker(models.Model):
     
 class Inventory(models.Model):
     units_available = models.IntegerField(default=0)
+    units_allocated = models.IntegerField(default=0)
 
     def __str__(self):
         return f"Inventory - {self.units_available} units available"
@@ -22,6 +23,19 @@ class Inventory(models.Model):
 class Location(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=255)
+    type = models.CharField(
+        choices=[
+            ('hospital', 'Hospital'),
+            ('clinic', 'Clinic'),
+            ('donation_centre', 'Donation Centre'),
+            ('van', 'Van'),
+            ('lab', 'Lab'),
+            ('other', 'Other')
+        ],
+        max_length=20,
+        default='other'
+    )
+    link = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return self.name + ' - ' + self.address
