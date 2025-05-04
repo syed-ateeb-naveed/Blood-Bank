@@ -97,11 +97,32 @@ class RequestDetailUpdateView(generics.RetrieveUpdateAPIView):
         if self.request.method == 'PATCH':
             return RequestUpdateSerializer
         return RequestDetailSerializer
-    
+
     def patch(self, request, *args, **kwargs):
-        response = super().patch(request, *args, **kwargs)
-        # Re-serialize with the full detail serializer
         instance = self.get_object()
+        inventory = Inventory.objects.first()  # Assuming there's only one inventory object
+
+        # Check if the status is being updated to 'approved'
+        if request.data.get('status') == 'approved':
+            if inventory.units_available < instance.units_required:
+                return Response(
+                    {"detail": "Not enough units available in inventory to approve this request."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            # Deduct units from available and add to allocated
+            inventory.units_available -= instance.units_required
+            inventory.units_allocated += instance.units_required
+            inventory.save()
+
+        # Check if the status is being updated to 'fulfilled'
+        if request.data.get('status') == 'fulfilled':
+            inventory.units_allocated -= instance.units_required
+            inventory.save()
+
+        response = super().patch(request, *args, **kwargs)
+
+        # Notify the patient about the status change
+        instance.refresh_from_db()
         patient = instance.patient.user
         decline_reason = request.data.get('decline_reason', '').strip()
 
@@ -130,11 +151,20 @@ class DonationDetailUpdateView(generics.RetrieveUpdateAPIView):
         if self.request.method == 'PATCH':
             return DonationUpdateSerializer
         return DonationDetailSerializer
-    
+
     def patch(self, request, *args, **kwargs):
         response = super().patch(request, *args, **kwargs)
         instance = self.get_object()
+        inventory = Inventory.objects.first()  # Assuming there's only one inventory object
         user = instance.donor.user
+
+        # Check if the status is being updated to 'completed'
+        if instance.status.status == 'completed':
+            # Add the donated units to the inventory
+            inventory.units_available += instance.units
+            inventory.save()
+
+        # Notify the donor about the status change
         if instance.status.status == 'pending':
             msg = f"Your donation is set to pending. Please wait for further updates."
         else:
@@ -145,6 +175,7 @@ class DonationDetailUpdateView(generics.RetrieveUpdateAPIView):
                 msg += f" You are advised to be at {instance.location} on {instance.date} at {instance.time}."
             elif instance.status.status == 'cancelled':
                 msg += f" Your donation has been cancelled."
+
         Notification.objects.create(recipient=user, message=msg)
         data = DonationDetailSerializer(instance).data
         return Response(data)
