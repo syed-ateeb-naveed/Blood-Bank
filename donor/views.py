@@ -1,9 +1,10 @@
 from rest_framework import generics, permissions, status
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
-from .serializers import RegisterSerializer, DonorSerializer, UpdateDonorSerializer, DonationSerializer, AllDonationsSerializer
+from .serializers import RegisterSerializer, DonorSerializer, UpdateDonorSerializer, DonationSerializer, AllDonationsSerializer, LocationSerializer
 from rest_framework.views import APIView
 from . models import Donor
+from worker.models import Location
 from worker.models import Status
 
 # Register API
@@ -105,3 +106,13 @@ class DonationListAPI(generics.ListAPIView):
             raise NotFound(detail="Donor not found", code=status.HTTP_404_NOT_FOUND)
 
         return donations
+    
+class LocationListAPI(generics.ListAPIView):
+    """
+    API endpoint for retrieving all locations.
+    """
+    serializer_class = LocationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Location.objects.all()

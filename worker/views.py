@@ -75,7 +75,6 @@ class RequestListByStatusView(generics.ListAPIView):
         return Request.objects.filter(status__status=status_param)
     
 
-
 class RequestDetailUpdateView(generics.RetrieveUpdateAPIView):
     queryset = Request.objects.all()
     permission_classes = [permissions.IsAuthenticated, IsStaffUser]
