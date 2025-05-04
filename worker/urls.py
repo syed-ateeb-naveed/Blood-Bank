@@ -18,4 +18,6 @@ urlpatterns = [
     path('request/<int:pk>/', views.RequestDetailUpdateView.as_view(), name='request-detail'),
     path('donation/<int:pk>/', views.DonationDetailUpdateView.as_view(), name='donation-detail'),
 
+    path('inventory/', views.InventoryView.as_view(), name='inventory'),
+
 ]

@@ -3,7 +3,7 @@ from donor.models import Donation
 from patient.models import Request
 from donor.serializers import DonorSerializer
 from patient.serializers import PatientSerializer
-from .models import Status
+from .models import Status, Inventory
 
 
 class StatusField(serializers.PrimaryKeyRelatedField):
@@ -77,3 +77,9 @@ class AllRequestsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Request
         fields = ('id', 'patient', 'blood_type', 'units_required', 'request_date', 'status')
+
+class InventorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Inventory
+        fields = ['id', 'units_available', 'units_allocated']

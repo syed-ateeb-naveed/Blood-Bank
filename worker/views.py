@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from .serializers import AllRequestsSerializer, RequestDetailSerializer, RequestUpdateSerializer, DonationDetailSerializer, DonationUpdateSerializer
+from .serializers import AllRequestsSerializer, RequestDetailSerializer, RequestUpdateSerializer, DonationDetailSerializer, DonationUpdateSerializer, InventorySerializer
 from donor.serializers import AllDonationsSerializer
 from .models import Worker, Inventory, Location, Status 
 from patient.models import Request
 from donor.models import Donation
 from rest_framework.views import APIView
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, NotFound
 from user.models import Notification
 # Create your views here.
 
@@ -18,6 +18,20 @@ class IsStaffUser(permissions.BasePermission):
         if not (request.user and request.user.is_staff):
             raise PermissionDenied(detail=self.message, code=status.HTTP_403_FORBIDDEN)
         return True
+
+class InventoryView(generics.RetrieveUpdateAPIView):
+    """
+    API endpoint for retrieving and updating inventory details.
+    Only accessible by staff users.
+    """
+    serializer_class = InventorySerializer
+    permission_classes = [permissions.IsAuthenticated, IsStaffUser]
+
+    def get_object(self):
+        try:
+            return Inventory.objects.get(id=1)  # Assuming there's only one inventory object
+        except Inventory.DoesNotExist:
+            raise NotFound(detail="Inventory not found", code=status.HTTP_404_NOT_FOUND)
 
 class DonationListView(generics.ListAPIView):
     """
