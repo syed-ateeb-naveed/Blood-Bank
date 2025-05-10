@@ -32,7 +32,7 @@ DEBUG = True
 
 # ALLOWED_HOSTS = ["*"]
 ALLOWED_HOSTS = [
-    "blood-bank-1234.up.railway.app",
+    "blood-bank-production-60a7.up.railway.app",
     "localhost",
     "127.0.0.1",
 ]
