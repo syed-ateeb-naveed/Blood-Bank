@@ -159,6 +159,15 @@ class DonationDetailUpdateView(generics.RetrieveUpdateAPIView):
         user = instance.donor.user
         cancel_reason = request.data.get('cancel_reason', '').strip()
 
+        location_id = request.data.get('location')
+        if location_id:
+            try:
+                location = Location.objects.get(pk=location_id)
+                instance.location = location
+                instance.save()
+            except Location.DoesNotExist:
+                return Response({"detail": "Invalid location ID."}, status=status.HTTP_400_BAD_REQUEST)
+
         # Check if the status is being updated to 'completed'
         if instance.status.status == 'completed':
             # Add the donated units to the inventory

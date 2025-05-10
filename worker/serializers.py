@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from donor.models import Donation
+from donor.models import Donation, Location
 from patient.models import Request
-from donor.serializers import DonorSerializer
+from donor.serializers import DonorSerializer, LocationSerializer
 from patient.serializers import PatientSerializer
 from .models import Status, Inventory
 
@@ -46,7 +46,7 @@ class RequestUpdateSerializer(serializers.ModelSerializer):
 class DonationDetailSerializer(serializers.ModelSerializer):
     donor = DonorSerializer(read_only=True)
     status = serializers.CharField(source='status.status', read_only=True)
-
+    location = LocationSerializer(read_only=True)
     class Meta:
         model = Donation
         fields = ['id', 'donor', 'units', 'date', 'time', 'location', 'status']
@@ -54,9 +54,11 @@ class DonationDetailSerializer(serializers.ModelSerializer):
 
 class DonationUpdateSerializer(serializers.ModelSerializer):
     status = StatusField(queryset=Status.objects.all())
+    location = serializers.PrimaryKeyRelatedField(queryset=Location.objects.all())  # Add this line
+
     class Meta:
         model = Donation
-        fields = ['status', 'date']  # Allow update of status and date
+        fields = ['status', 'date', 'time', 'location']  # Allow update of status and date
 
 class AllDonationsSerializer(serializers.ModelSerializer):
     """
