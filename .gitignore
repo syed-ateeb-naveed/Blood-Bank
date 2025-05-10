@@ -3,3 +3,5 @@ __pycache__/
 
 # Ignore the SQLite database file
 db.sqlite3
+
+.env
