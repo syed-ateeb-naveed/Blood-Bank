@@ -31,7 +31,15 @@ SECRET_KEY = "django-insecure-5k#=8sw%36tcf(2h8spv=m*91ctaao$qks=&zwsf-+ta8m*%lv
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+# ALLOWED_HOSTS = [
+#     "blood-bank-1234.up.railway.app",
+#     "localhost",
+#     "127.0.0.1",
+# ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "blood-bank-production-60a7.up.railway.app",
+]
 # Application definition
 
 INSTALLED_APPS = [
