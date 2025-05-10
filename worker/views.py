@@ -157,6 +157,7 @@ class DonationDetailUpdateView(generics.RetrieveUpdateAPIView):
         instance = self.get_object()
         inventory = Inventory.objects.first()  # Assuming there's only one inventory object
         user = instance.donor.user
+        cancel_reason = request.data.get('cancel_reason', '').strip()
 
         # Check if the status is being updated to 'completed'
         if instance.status.status == 'completed':
@@ -174,7 +175,8 @@ class DonationDetailUpdateView(generics.RetrieveUpdateAPIView):
             elif instance.status.status == 'scheduled':
                 msg += f" You are advised to be at {instance.location} on {instance.date} at {instance.time}."
             elif instance.status.status == 'cancelled':
-                msg += f" Your donation has been cancelled."
+                if cancel_reason:
+                    msg += f" Reason: {cancel_reason}"
 
         Notification.objects.create(recipient=user, message=msg)
         data = DonationDetailSerializer(instance).data

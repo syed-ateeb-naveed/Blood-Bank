@@ -86,10 +86,15 @@ class DonationAPI(generics.CreateAPIView):
             donor = Donor.objects.get(user=request.user)
         except Donor.DoesNotExist:
             return Response({"message": "Register as donor first."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            location = Location.objects.get(pk=request.data['location'])
+        except Location.DoesNotExist:
+            return Response({"message": "Location not found."}, status=status.HTTP_400_BAD_REQUEST)
         status_obj = Status.objects.get(pk=1)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(donor=donor, status=status_obj)
+        serializer.save(donor=donor, status=status_obj, location=location)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class DonationListAPI(generics.ListAPIView):
