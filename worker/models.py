@@ -59,5 +59,5 @@ class Status(models.Model):
         return self.status
     
     class Meta:
-        verbose_name = "Stauts"
-        verbose_name_plural = "Stautses"
+        verbose_name = "Status"
+        verbose_name_plural = "Statuses"
