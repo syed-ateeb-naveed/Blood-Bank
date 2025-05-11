@@ -6,3 +6,4 @@ djangorestframework-simplejwt
 pillow
 python-dotenv
 mysql-connector-python
+whitenoise
