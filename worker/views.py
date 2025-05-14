@@ -29,7 +29,7 @@ class InventoryView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         try:
-            return Inventory.objects.get(id=1)  # Assuming there's only one inventory object
+            return Inventory.objects.get(id=1) 
         except Inventory.DoesNotExist:
             raise NotFound(detail="Inventory not found", code=status.HTTP_404_NOT_FOUND)
 

@@ -54,7 +54,7 @@ class DonationDetailSerializer(serializers.ModelSerializer):
 
 class DonationUpdateSerializer(serializers.ModelSerializer):
     status = StatusField(queryset=Status.objects.all())
-    location = serializers.PrimaryKeyRelatedField(queryset=Location.objects.all())  # Add this line
+    location = serializers.PrimaryKeyRelatedField(queryset=Location.objects.all())  
 
     class Meta:
         model = Donation
