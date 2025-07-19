@@ -33,13 +33,16 @@ DEBUG = False
 # ALLOWED_HOSTS = ["*"]
 ALLOWED_HOSTS = [
     "blood-bank-production-60a7.up.railway.app",
+    "blood-bank-9umh.onrender.com", 
     "localhost",
     "127.0.0.1",
-    ".railway.app"
+    ".railway.app",
+    ".onrender.com"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://blood-bank-production-60a7.up.railway.app"
+    "https://blood-bank-production-60a7.up.railway.app",
+    "https://blood-bank-9umh.onrender.com"
 ]
 # Application definition
 
