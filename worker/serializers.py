@@ -84,4 +84,4 @@ class InventorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Inventory
-        fields = ['id', 'units_available', 'units_allocated']
+        fields = ['id', 'blood_group', 'units_available', 'units_allocated']

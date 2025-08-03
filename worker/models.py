@@ -1,5 +1,4 @@
 from django.db import models
-
 # Create your models here.
 
 
@@ -10,11 +9,12 @@ class Worker(models.Model):
         return self.user.first_name + ' ' + self.user.last_name
     
 class Inventory(models.Model):
+    blood_group = models.CharField(choices=[('A+', 'A+'), ('A-', 'A-'), ('B+', 'B+'), ('B-', 'B-'), ('AB+', 'AB+'), ('AB-', 'AB-'), ('O+', 'O+'), ('O-', 'O-')], max_length=3, unique=True)
     units_available = models.IntegerField(default=0)
     units_allocated = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"Inventory - {self.units_available} units available"
+        return f"{self.units_available} units available of Blood Group {self.blood_group}"
     
     class Meta:
         verbose_name = "Inventory"

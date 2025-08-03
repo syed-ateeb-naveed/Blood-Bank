@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User
+from .models import User, Notification
 
 # Register your models here.
 
@@ -19,3 +19,5 @@ class UserAdmin(admin.ModelAdmin):
     ordering = ['-created_at']
 
     list_per_page = 20
+
+admin.site.register(Notification)
