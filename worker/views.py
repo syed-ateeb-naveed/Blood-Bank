@@ -9,6 +9,7 @@ from donor.models import Donation
 from rest_framework.views import APIView
 from rest_framework.exceptions import PermissionDenied, NotFound
 from user.models import Notification
+from django.db import transaction
 # Create your views here.
 
 class IsStaffUser(permissions.BasePermission):
@@ -19,7 +20,7 @@ class IsStaffUser(permissions.BasePermission):
             raise PermissionDenied(detail=self.message, code=status.HTTP_403_FORBIDDEN)
         return True
 
-class InventoryView(generics.RetrieveUpdateAPIView):
+class InventoryView(generics.ListAPIView):
     """
     API endpoint for retrieving and updating inventory details.
     Only accessible by staff users.
@@ -27,11 +28,10 @@ class InventoryView(generics.RetrieveUpdateAPIView):
     serializer_class = InventorySerializer
     permission_classes = [permissions.IsAuthenticated, IsStaffUser]
 
-    def get_object(self):
-        try:
-            return Inventory.objects.get(id=1)  # Assuming there's only one inventory object
-        except Inventory.DoesNotExist:
-            raise NotFound(detail="Inventory not found", code=status.HTTP_404_NOT_FOUND)
+    def get(self, request):
+        inventory_qs = Inventory.objects.all()
+        serializer = InventorySerializer(inventory_qs, many=True)  # Use many=True for querysets
+        return Response(serializer.data)
 
 class DonationListView(generics.ListAPIView):
     """
@@ -100,7 +100,11 @@ class RequestDetailUpdateView(generics.RetrieveUpdateAPIView):
 
     def patch(self, request, *args, **kwargs):
         instance = self.get_object()
-        inventory = Inventory.objects.first()  # Assuming there's only one inventory object
+        # inventory = Inventory.objects.first()  # Assuming there's only one inventory object
+        try:
+            inventory = Inventory.objects.get(blood_group=instance.blood_type) 
+        except Inventory.DoesNotExist:
+            return Response({"detail": "Invalid Blood Type"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Check if the status is being updated to 'approved'
         if request.data.get('status') == 'approved':
@@ -110,9 +114,10 @@ class RequestDetailUpdateView(generics.RetrieveUpdateAPIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             # Deduct units from available and add to allocated
-            inventory.units_available -= instance.units_required
-            inventory.units_allocated += instance.units_required
-            inventory.save()
+            with transaction.atomic():
+                inventory.units_available -= instance.units_required
+                inventory.units_allocated += instance.units_required
+                inventory.save()
 
         # Check if the status is being updated to 'fulfilled'
         if request.data.get('status') == 'fulfilled':
@@ -155,7 +160,12 @@ class DonationDetailUpdateView(generics.RetrieveUpdateAPIView):
     def patch(self, request, *args, **kwargs):
         response = super().patch(request, *args, **kwargs)
         instance = self.get_object()
-        inventory = Inventory.objects.first()  # Assuming there's only one inventory object
+        print(instance)
+        try:
+            inventory = Inventory.objects.get(blood_group=instance.donor.blood_group) 
+        except Inventory.DoesNotExist:
+            return Response({"detail": "Invalid Blood Type"}, status=status.HTTP_400_BAD_REQUEST)
+
         user = instance.donor.user
         cancel_reason = request.data.get('cancel_reason', '').strip()
 
@@ -166,7 +176,7 @@ class DonationDetailUpdateView(generics.RetrieveUpdateAPIView):
                 instance.location = location
                 instance.save()
             except Location.DoesNotExist:
-                return Response({"detail": "Invalid location ID."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"detail": "Invalid location ID"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Check if the status is being updated to 'completed'
         if instance.status.status == 'completed':
